@@ -14,10 +14,12 @@
         body {
             background-color: #0f172a; /* slate-900 */
             color: white;
-            overflow-x: hidden;
+            overflow: hidden; /* Disable scrolling */
+            margin: 0;
+            height: 100vh;
         }
         
-        /* Animation Utility Classes (Replacements for Framer Motion) */
+        /* Animation Utility Classes */
         .fade-in-section {
             opacity: 0;
             transform: translateY(50px);
@@ -43,7 +45,7 @@
             transform: translateX(0);
         }
 
-        /* Custom Styles from React Code */
+        /* Custom Styles */
         .glow-border {
             box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.7);
         }
@@ -122,6 +124,8 @@
             flex-direction: column;
             justify-content: center;
             padding: 6rem 0 4rem;
+            width: 100vw; /* Ensure full width */
+            flex-shrink: 0;
         }
         .mission-statement {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(249, 115, 22, 0.1));
@@ -149,10 +153,47 @@
         .hidden-view {
             display: none;
         }
+
+        /* Slider Container */
+        #slider-container {
+            position: relative;
+            top: 80px; /* Height of fixed header */
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        #sections-slider {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .slider-section {
+            width: 100vw;
+            height: 100%;
+            overflow-y: auto; /* Allow scrolling within a section if content overflows */
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        /* Hide scrollbar for cleaner look (optional) */
+        .slider-section::-webkit-scrollbar {
+            width: 8px;
+        }
+        .slider-section::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .slider-section::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Portfolio Overlay View (unchanged) -->
     <div id="portfolio-view" class="hidden-view fixed top-0 left-0 w-full h-full bg-slate-900 z-50 overflow-y-auto">
         <header class="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-50">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -183,141 +224,153 @@
         </section>
     </div>
 
+    <!-- Main View with Sliding Sections -->
     <div id="main-view">
         
+        <!-- Fixed Header (nav buttons now trigger slide) -->
         <header class="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-50">
             <nav class="container mx-auto px-6 py-4 flex justify-center">
                 <ul class="flex flex-wrap justify-center gap-6 md:gap-10 list-none">
-                    <li><a href="#profile" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Profile<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
-                    <li><a href="#ventures" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Ventures<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                    <li><button onclick="slideToSection(0)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">Profile<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></button></li>
+                    <li><button onclick="slideToSection(1)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">Ventures<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></button></li>
                     <li>
                         <button onclick="toggleView(true)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">
                             Portfolio
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
                         </button>
                     </li>
-                    <li><a href="#skills" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Skills<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
-                    <li><a href="#contact" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                    <li><button onclick="slideToSection(2)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">Skills<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></button></li>
+                    <li><button onclick="slideToSection(3)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></button></li>
                 </ul>
             </nav>
         </header>
 
-        <section id="profile" class="section-container pt-32 fade-in-section">
-            <div class="container mx-auto px-6 flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-10 md:mb-0">
-                    <div class="name-header text-center md:text-left">
-                        <h1>Alazar Yalew</h1>
-                        <p class="text-2xl text-slate-400">Student at ASTU University, Ethiopia</p>
-                    </div>
-                    
-                    <div class="section-divider"></div>
-                    
-                    <div class="mission-statement mb-6">
-                        <p class="text-lg leading-relaxed">
-                            I believe technology only matters when it solves physical problems. Ethiopia has immense potential, but we're often left behind in the global robotics and security race. I'm dedicated to changing that narrative.
-                        </p>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold mb-3 flex items-center">
-                            <span className="text-blue-400 mr-2">🚀</span> Founder of Libemulu & Derash
-                        </h2>
-                        <p className="text-gray-300 leading-relaxed">
-                            I founded Libemulu to bring world-class cybersecurity and organization to Ethiopian businesses, and Derash to prove that autonomous machines can solve our most difficult mechanical challenges—from farming to manufacturing.
-                        </p>
-                    </div>
-
-                    <a href="#ventures" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 inline-block transform hover:scale-105">
-                        Explore My Ventures
-                    </a>
-                </div>
-                
-                <div class="md:w-1/2 flex justify-center">
-                    <div class="glow-border rounded-full overflow-hidden border-4 border-blue-500 w-64 h-64 md:w-80 md:h-80">
-                        <img 
-                            src="https://i.postimg.cc/ct3Nq8Bw/IMG-20250917-132856-678.jpg" 
-                            alt="Alazar Yalew" 
-                            class="w-full h-full object-cover"
-                            onerror="this.src='https://placehold.co/400x400?text=Profile&font=montserrat&bg=2f3136&fg=5c5f66'"
-                        >
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ventures" class="section-container bg-slate-800/50">
-            <div class="container mx-auto px-6 slide-in-right">
-                <h2 class="section-title">My Ventures</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                    
-                    <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-blue-500 hover:glow-border transition-all transform hover:-translate-y-1">
-                        <div class="flex items-center mb-4">
-                            <div class="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                <span class="text-2xl">💻</span>
+        <!-- Slider Container -->
+        <div id="slider-container">
+            <div id="sections-slider">
+                <!-- Profile Section -->
+                <section id="profile" class="slider-section section-container pt-32 fade-in-section">
+                    <div class="container mx-auto px-6 flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/2 mb-10 md:mb-0">
+                            <div class="name-header text-center md:text-left">
+                                <h1>Alazar Yalew</h1>
+                                <p class="text-2xl text-slate-400">Student at ASTU University, Ethiopia</p>
                             </div>
-                            <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Libemulu</h3>
-                        </div>
-                        <p class="text-blue-400 font-medium mb-2">Software & Cybersecurity</p>
-                        <p class="text-xl font-medium mb-3 text-white">Organization is the key to growth.</p>
-                        <p class="text-gray-300 mb-4">Providing autonomous penetration testing and bespoke software development to help enterprises scale securely.</p>
-                        <div class="flex flex-wrap gap-2 mt-4">
-                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Python</span>
-                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Linux Security</span>
-                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Full-Stack</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-orange-500 hover:glow-orange transition-all transform hover:-translate-y-1">
-                        <div class="flex items-center mb-4">
-                            <div class="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                <span class="text-2xl">🤖</span>
+                            
+                            <div class="section-divider"></div>
+                            
+                            <div class="mission-statement mb-6">
+                                <p class="text-lg leading-relaxed">
+                                    I believe technology only matters when it solves physical problems. Ethiopia has immense potential, but we're often left behind in the global robotics and security race. I'm dedicated to changing that narrative.
+                                </p>
                             </div>
-                            <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Derash</h3>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-2xl font-bold mb-3 flex items-center">
+                                    <span class="text-blue-400 mr-2">🚀</span> Founder of Libemulu & Derash
+                                </h2>
+                                <p class="text-gray-300 leading-relaxed">
+                                    I founded Libemulu to bring world-class cybersecurity and organization to Ethiopian businesses, and Derash to prove that autonomous machines can solve our most difficult mechanical challenges—from farming to manufacturing.
+                                </p>
+                            </div>
+
+                            <button onclick="slideToSection(1)" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 inline-block transform hover:scale-105">
+                                Explore My Ventures
+                            </button>
                         </div>
-                        <p class="text-orange-400 font-medium mb-2">Autonomous Robotics</p>
-                        <p class="text-xl font-medium mb-3 text-white">Closing the technology gap in East Africa.</p>
-                        <p class="text-gray-300 mb-4">Modernizing Ethiopian agriculture and industry through autonomous fertilizer sprayers, laser weeders, and precision industrial arms.</p>
-                        <div class="flex flex-wrap gap-2 mt-4">
-                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">ROS</span>
-                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">C++</span>
-                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">Computer Vision</span>
+                        
+                        <div class="md:w-1/2 flex justify-center">
+                            <div class="glow-border rounded-full overflow-hidden border-4 border-blue-500 w-64 h-64 md:w-80 md:h-80">
+                                <img 
+                                    src="https://i.postimg.cc/ct3Nq8Bw/IMG-20250917-132856-678.jpg" 
+                                    alt="Alazar Yalew" 
+                                    class="w-full h-full object-cover"
+                                    onerror="this.src='https://placehold.co/400x400?text=Profile&font=montserrat&bg=2f3136&fg=5c5f66'"
+                                >
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                </div>
-            </div>
-        </section>
+                <!-- Ventures Section -->
+                <section id="ventures" class="slider-section section-container bg-slate-800/50 slide-in-right">
+                    <div class="container mx-auto px-6">
+                        <h2 class="section-title">My Ventures</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                            
+                            <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-blue-500 hover:glow-border transition-all transform hover:-translate-y-1">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <span class="text-2xl">💻</span>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Libemulu</h3>
+                                </div>
+                                <p class="text-blue-400 font-medium mb-2">Software & Cybersecurity</p>
+                                <p class="text-xl font-medium mb-3 text-white">Organization is the key to growth.</p>
+                                <p class="text-gray-300 mb-4">Providing autonomous penetration testing and bespoke software development to help enterprises scale securely.</p>
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Python</span>
+                                    <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Linux Security</span>
+                                    <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Full-Stack</span>
+                                </div>
+                            </div>
 
-        <section id="skills" class="section-container bg-gradient-to-b from-slate-800/50 to-slate-900">
-            <div class="container mx-auto px-6 fade-in-section">
-                <h2 class="section-title">My Skills</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto" id="skills-container">
+                            <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-orange-500 hover:glow-orange transition-all transform hover:-translate-y-1">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <span class="text-2xl">🤖</span>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Derash</h3>
+                                </div>
+                                <p class="text-orange-400 font-medium mb-2">Autonomous Robotics</p>
+                                <p class="text-xl font-medium mb-3 text-white">Closing the technology gap in East Africa.</p>
+                                <p class="text-gray-300 mb-4">Modernizing Ethiopian agriculture and industry through autonomous fertilizer sprayers, laser weeders, and precision industrial arms.</p>
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">ROS</span>
+                                    <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">C++</span>
+                                    <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">Computer Vision</span>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-            </div>
-        </section>
+                </section>
 
-        <section id="contact" class="section-container bg-gradient-to-b from-slate-900 to-slate-800">
-            <div class="container mx-auto px-6 text-center fade-in-section">
-                <h2 class="section-title">Let's Connect</h2>
-                <p class="text-3xl md:text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-500">Ready to build the future?</p>
-                
-                <div class="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto">
-                    <a href="mailto:alazaryalew7@gmail.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
-                        <span class="mr-3">✉️</span> Email Me
-                    </a>
-                    <a href="https://linkedin.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
-                        <span class="mr-3">💼</span> LinkedIn
-                    </a>
-                    <a href="https://github.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
-                        <span class="mr-3">🐙</span> GitHub
-                    </a>
-                </div>
+                <!-- Skills Section -->
+                <section id="skills" class="slider-section section-container bg-gradient-to-b from-slate-800/50 to-slate-900 fade-in-section">
+                    <div class="container mx-auto px-6">
+                        <h2 class="section-title">My Skills</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto" id="skills-container">
+                            <!-- Skills will be injected by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Section -->
+                <section id="contact" class="slider-section section-container bg-gradient-to-b from-slate-900 to-slate-800 slide-in-left">
+                    <div class="container mx-auto px-6 text-center">
+                        <h2 class="section-title">Let's Connect</h2>
+                        <p class="text-3xl md:text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-500">Ready to build the future?</p>
+                        
+                        <div class="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto">
+                            <a href="mailto:alazaryalew7@gmail.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                                <span class="mr-3">✉️</span> Email Me
+                            </a>
+                            <a href="https://linkedin.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                                <span class="mr-3">💼</span> LinkedIn
+                            </a>
+                            <a href="https://github.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                                <span class="mr-3">🐙</span> GitHub
+                            </a>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </section>
+        </div>
     </div>
 
     <script>
-        // --- 1. CONFIGURATION DATA ---
+        // --- 1. CONFIGURATION DATA (unchanged) ---
         const futureProjects = [
             { icon: '🌐', color: 'blue', type: 'Planned' },
             { icon: '🤖', color: 'orange', type: 'Planned' },
@@ -335,9 +388,7 @@
             "https://placekitten.com/600/400?image=3"
         ];
 
-        // --- 2. RENDER FUNCTIONS ---
-        
-        // Render Finished Projects
+        // --- 2. RENDER FUNCTIONS (unchanged) ---
         const finishedContainer = document.getElementById('finished-projects-container');
         finishedImages.forEach((imgSrc, index) => {
             finishedContainer.innerHTML += `
@@ -357,7 +408,6 @@
             `;
         });
 
-        // Render Future Projects
         const futureContainer = document.getElementById('future-projects-container');
         futureProjects.forEach((proj, index) => {
             const colorClass = proj.color === 'blue' ? 'text-blue-400 bg-blue-500/20' : 
@@ -382,7 +432,6 @@
             `;
         });
 
-        // Render Skills
         const skillsData = {
             'Software': { icon: '👨‍💻', color: 'blue', items: ['Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Go', 'Rust', 'SQL', 'Swift', 'Kotlin', 'Linux'] },
             'Robotics': { icon: '⚙️', color: 'orange', items: ['ROS', 'C++', 'MATLAB', 'Simulink', 'Verilog', 'PLC', 'Arduino'] },
@@ -415,7 +464,35 @@
             `;
         }
 
-        // --- 3. VIEW TOGGLE LOGIC ---
+        // --- 3. SLIDER FUNCTIONALITY ---
+        const slider = document.getElementById('sections-slider');
+        const sections = document.querySelectorAll('.slider-section');
+        let currentIndex = 0;
+
+        window.slideToSection = function(index) {
+            if (index < 0 || index >= sections.length) return;
+            currentIndex = index;
+            const translateX = -index * 100; // in vw
+            slider.style.transform = `translateX(${translateX}vw)`;
+
+            // Trigger fade-in animations for the active section
+            sections.forEach((section, i) => {
+                if (i === index) {
+                    section.classList.add('is-visible');
+                    // Also trigger any child animations if needed
+                    section.querySelectorAll('.fade-in-section, .slide-in-left, .slide-in-right').forEach(el => {
+                        el.classList.add('is-visible');
+                    });
+                } else {
+                    // Optionally remove animations from hidden sections, but not necessary
+                }
+            });
+        };
+
+        // Initialize: show first section with animations
+        slideToSection(0);
+
+        // --- 4. VIEW TOGGLE LOGIC (unchanged) ---
         function toggleView(showPortfolio) {
             const mainView = document.getElementById('main-view');
             const portfolioView = document.getElementById('portfolio-view');
@@ -424,36 +501,33 @@
             if (showPortfolio) {
                 portfolioView.classList.remove('hidden-view');
                 mainView.style.display = 'none';
-                body.style.overflowY = 'hidden'; // Stop background scrolling
+                body.style.overflowY = 'hidden';
             } else {
                 portfolioView.classList.add('hidden-view');
                 mainView.style.display = 'block';
-                body.style.overflowY = 'auto';
+                body.style.overflowY = 'hidden'; // main view still no scroll
             }
         }
 
-        // --- 4. ANIMATION OBSERVER (Replacement for Framer Motion whileInView) ---
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
+        // --- 5. ANIMATION OBSERVER (for elements inside sections that should animate when they come into view) ---
+        // Since sections are now sliding, we can use the same observer but trigger manually on slide.
+        // However, we already call class additions in slideToSection. We'll keep the observer for any elements that might be added later.
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    // Optional: Stop observing once visible to mimic viewport={{ once: true }}
                     observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // Attach observer to all elements with animation classes
         document.querySelectorAll('.fade-in-section, .slide-in-left, .slide-in-right').forEach(el => {
             observer.observe(el);
         });
 
+        // Ensure that when sliding, the new section's elements get observed (they already are).
+        // Also, on slide, we manually add is-visible to section and its children to ensure animations play.
     </script>
 </body>
-              </html>
+    </html>
