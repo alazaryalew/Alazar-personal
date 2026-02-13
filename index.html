@@ -1,615 +1,459 @@
-```jsx
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alazar Yalew | Portfolio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
 
-export default function App() {
-  const [isPortfolioView, setIsPortfolioView] = useState(false);
-  
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  };
-
-  // CONFIGURATION SECTION - Replace these paths with your actual image URLs when deploying
-  const profileImagePath = "https://www.bing.com/images/search?q=cat+image&id=CFC8C9F1FDE8C980278209C0B0110BD77AC4DC47&FORM=IACFIR&PC=U316"; // Direct cat image URL
-  const futureProjectImages = [
-    "https://placekitten.com/600/400?image=1",
-    "https://placekitten.com/600/400?image=2",
-    "https://placekitten.com/600/400?image=3"
-  ];
-  const finishedProjectImages = [
-    "https://placekitten.com/600/400?image=4",
-    "https://placekitten.com/600/400?image=5"
-  ];
-  // END CONFIGURATION SECTION
-
-  return (
-    <div className="bg-slate-900 text-white min-h-screen overflow-x-hidden">
-      <style jsx global>{`
+    <style>
         html {
-          scroll-behavior: smooth;
+            scroll-behavior: smooth;
         }
         body {
-          overflow-y: ${isPortfolioView ? 'hidden' : 'auto'};
+            background-color: #0f172a; /* slate-900 */
+            color: white;
+            overflow-x: hidden;
         }
+        
+        /* Animation Utility Classes (Replacements for Framer Motion) */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s ease-out;
+        }
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s ease-out;
+        }
+        .slide-in-left.is-visible, .slide-in-right.is-visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Custom Styles from React Code */
         .glow-border {
-          box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.7);
         }
         .glow-orange {
-          box-shadow: 0 0 15px 2px rgba(249, 115, 22, 0.7);
+            box-shadow: 0 0 15px 2px rgba(249, 115, 22, 0.7);
         }
         .section-title {
-          font-family: 'monospace', monospace;
-          font-size: 2.5rem;
-          letter-spacing: -0.05em;
-          text-align: center;
-          margin-bottom: 2rem;
-          background: linear-gradient(90deg, #3b82f6, #f97316, #3b82f6);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          position: relative;
-          display: inline-block;
+            font-family: 'monospace', monospace;
+            font-size: 2.5rem;
+            letter-spacing: -0.05em;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #3b82f6, #f97316, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
         .section-title::after {
-          content: '';
-          display: block;
-          width: 80px;
-          height: 4px;
-          background: linear-gradient(90deg, #3b82f6, #f97316);
-          margin: 1rem auto;
-          border-radius: 2px;
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #f97316);
+            margin: 1rem auto;
+            border-radius: 2px;
         }
         .skill-button {
-          border-width: 1.5px;
-          transition: all 0.4s ease;
-          position: relative;
-          overflow: hidden;
+            border-width: 1.5px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
         }
         .skill-button::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.7s;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.7s;
         }
         .skill-button:hover::after {
-          left: 100%;
+            left: 100%;
         }
         .project-card {
-          position: relative;
-          overflow: hidden;
-          cursor: default;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
         }
         .project-card::before {
-          content: 'UPDATE SOON';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(30, 41, 59, 0.95);
-          color: #f97316;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          font-size: 1.8rem;
-          opacity: 1;
-          z-index: 10;
-          text-align: center;
-          padding: 2rem;
+            content: 'UPDATE SOON';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.95);
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.8rem;
+            opacity: 1;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
         }
         .section-container {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 6rem 0 4rem; /* Increased top padding to prevent header overlap */
-        }
-        .nav-link {
-          text-decoration: none;
-          color: inherit;
-        }
-        .portfolio-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgb(15, 23, 42);
-          z-index: 1000;
-          display: flex;
-          flex-direction: column;
-          overflow-y: auto;
-          padding-top: 80px;
-        }
-        .portfolio-section {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 4rem 0;
-        }
-        .profile-content {
-          max-width: 600px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6rem 0 4rem;
         }
         .mission-statement {
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(249, 115, 22, 0.1));
-          border-left: 4px solid #3b82f6;
-          padding: 1.5rem;
-          border-radius: 0 12px 12px 0;
-          margin: 1.5rem 0;
-        }
-        .name-header {
-          text-align: center;
-          margin-bottom: 1.5rem;
-          position: relative;
-          z-index: 10;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(249, 115, 22, 0.1));
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
         }
         .name-header h1 {
-          font-size: 3.5rem;
-          font-weight: 800;
-          letter-spacing: -0.025em;
-          margin-bottom: 0.5rem;
-          text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-        .name-header p {
-          font-size: 1.5rem;
-          color: #64748b;
-          font-weight: 500;
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
         .section-divider {
-          height: 2px;
-          background: linear-gradient(90deg, #3b82f6, #f97316);
-          width: 80px;
-          margin: 2rem auto;
-          border-radius: 1px;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #f97316);
+            width: 80px;
+            margin: 2rem auto;
+            border-radius: 1px;
         }
-        header {
-          position: fixed !important;
-          top: 0 !important;
-          z-index: 1000 !important;
+        
+        /* Visibility Toggles */
+        .hidden-view {
+            display: none;
         }
-      `}</style>
+    </style>
+</head>
+<body>
 
-      {/* Portfolio View Overlay */}
-      {isPortfolioView && (
-        <motion.div 
-          className="portfolio-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Portfolio Header */}
-          <header className="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-50">
-            <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-              <button 
-                onClick={() => setIsPortfolioView(false)}
-                className="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all flex items-center"
-              >
-                <span className="mr-2 text-2xl">←</span> Back to Main
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
-              </button>
-              <div className="text-2xl font-mono">PORTFOLIO</div>
+    <div id="portfolio-view" class="hidden-view fixed top-0 left-0 w-full h-full bg-slate-900 z-50 overflow-y-auto">
+        <header class="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-50">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <button onclick="toggleView(false)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all flex items-center">
+                    <span class="mr-2 text-2xl">←</span> Back to Main
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
+                </button>
+                <div class="text-2xl font-mono">PORTFOLIO</div>
             </nav>
-          </header>
+        </header>
 
-          {/* Finished Projects Section */}
-          <section id="finished" className="portfolio-section bg-gradient-to-b from-slate-900 to-slate-800/50">
-            <motion.div 
-              initial={{ opacity: 0, x: -100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto px-6"
-            >
-              <h2 className="section-title mx-auto mb-12">Finished Projects</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                {[0, 1].map((index) => (
-                  <motion.div 
-                    key={`finished-${index}`}
-                    variants={fadeIn}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="project-card bg-slate-800 rounded-2xl p-6 border border-slate-700 relative overflow-hidden hover:scale-105 transition-transform"
-                  >
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center mr-3 flex-shrink-0">
-                        <span className="text-xl">✅</span>
-                      </div>
-                      <h3 className="text-xl font-bold">Finished Project {index + 1}</h3>
-                    </div>
-                    
-                    <div className="mb-4 rounded-xl overflow-hidden border border-slate-700/50">
-                      <img 
-                        src={finishedProjectImages[index]} 
-                        alt={`Finished Project ${index + 1}`} 
-                        className="w-full h-48 object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://placehold.co/600x400?text=Finished+Project&font=montserrat&bg=2f3136&fg=5c5f66";
-                        }}
-                      />
-                    </div>
-                    
-                    <p className="text-gray-400 text-sm mb-3 min-h-[60px]">
-                      This project has been successfully completed and deployed.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="bg-green-900/50 text-green-300 px-2.5 py-1 rounded-full text-xs font-medium border border-green-800/70">
-                        Completed
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Future Projects Section */}
-          <section id="future" className="portfolio-section bg-gradient-to-b from-slate-800/50 to-slate-900">
-            <motion.div 
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto px-6"
-            >
-              <h2 className="section-title mx-auto mb-12">Future Projects</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {[0, 1, 2].map((index) => (
-                  <motion.div 
-                    key={`future-${index}`}
-                    variants={fadeIn}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="project-card bg-slate-800 rounded-2xl p-6 border border-slate-700 relative overflow-hidden hover:scale-105 transition-transform"
-                  >
-                    <div className="flex items-center mb-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 ${
-                        index === 0 ? 'bg-blue-500/20 text-blue-400' : 
-                        index === 1 ? 'bg-orange-500/20 text-orange-400' : 'bg-purple-500/20 text-purple-400'
-                      }`}>
-                        <span className="text-xl">
-                          {index === 0 ? '🌐' : index === 1 ? '🤖' : '🔒'}
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-bold">
-                        Future Project {index + 1}
-                      </h3>
-                    </div>
-                    
-                    <div className="mb-4 rounded-xl overflow-hidden border border-slate-700/50">
-                      <img 
-                        src={futureProjectImages[index]} 
-                        alt={`Future Project ${index + 1}`} 
-                        className="w-full h-40 object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://placehold.co/600x400?text=Future+Project&font=montserrat&bg=2f3136&fg=5c5f66";
-                        }}
-                      />
-                    </div>
-                    
-                    <p className="text-gray-400 text-sm mb-3 min-h-[60px]">
-                      Exciting project in the pipeline. Stay tuned for updates and announcements.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        index === 0 ? 'bg-blue-900/50 text-blue-300 border border-blue-800/70' : 
-                        index === 1 ? 'bg-orange-900/50 text-orange-300 border border-orange-800/70' : 'bg-purple-900/50 text-purple-300 border border-purple-800/70'
-                      }`}>
-                        Planned
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </section>
-        </motion.div>
-      )}
-
-      {/* Main View - Only shown when not in portfolio mode */}
-      {!isPortfolioView && (
-        <div>
-          {/* Sticky Glassmorphism Header - Now with higher z-index and fixed positioning */}
-          <header className="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-[100]">
-            <nav className="container mx-auto px-6 py-4 flex justify-center">
-              <ul className="flex flex-wrap justify-center gap-6 md:gap-10">
-                {['Profile', 'Ventures', 'Portfolio', 'Skills', 'Contact'].map((item) => (
-                  <li key={item}>
-                    {item === 'Portfolio' ? (
-                      <button 
-                        onClick={() => setIsPortfolioView(true)}
-                        className="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer"
-                      >
-                        Portfolio
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
-                      </button>
-                    ) : (
-                      <a 
-                        href={`#${item.toLowerCase()}`}
-                        className="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all nav-link"
-                      >
-                        {item}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </header>
-
-          {/* Profile Section - With increased top padding to prevent header overlap */}
-          <section id="profile" className="section-container pt-32"> {/* Added pt-32 for top padding */}
-            <motion.div 
-              variants={fadeIn}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="container mx-auto px-6 flex flex-col md:flex-row items-center"
-            >
-              <div className="md:w-1/2 mb-10 md:mb-0 profile-content">
-                <div className="name-header">
-                  <h1>Alazar Yalew</h1>
-                  <p>Student at ASTU University, Ethiopia</p>
+        <section class="min-h-screen flex flex-col justify-center py-20 px-6 bg-gradient-to-b from-slate-900 to-slate-800/50">
+            <div class="container mx-auto slide-in-left">
+                <h2 class="section-title">Finished Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div id="finished-projects-container" class="contents"></div>
                 </div>
-                
-                <div className="section-divider"></div>
-                
-                <div className="mission-statement mb-6">
-                  <p className="text-lg leading-relaxed">
-                    I believe technology only matters when it solves physical problems. Ethiopia has immense potential, but we're often left behind in the global robotics and security race. I'm dedicated to changing that narrative.
-                  </p>
-                </div>
-                
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-3 flex items-center">
-                    <span className="text-blue-400 mr-2">🚀</span> Founder of Libemulu & Derash
-                  </h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    I founded Libemulu to bring world-class cybersecurity and organization to Ethiopian businesses, and Derash to prove that autonomous machines can solve our most difficult mechanical challenges—from farming to manufacturing.
-                  </p>
-                </div>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-3 flex items-center">
-                    <span className="text-orange-400 mr-2">🌍</span> My Vision
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    Bridging the gap between digital security and physical automation to build a more efficient, technologically advanced Ethiopia.
-                  </p>
-                </div>
-                
-                <a 
-                  href="#ventures"
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 inline-block transform hover:scale-105 nav-link"
-                >
-                  Explore My Ventures
-                </a>
-              </div>
-              <div className="md:w-1/2 flex justify-center">
-                <div className="relative">
-                  <div className="glow-border rounded-full overflow-hidden border-4 border-blue-500">
-                    <img 
-                      src={profileImagePath} 
-                      alt="Alazar Yalew" 
-                      className="rounded-full w-64 h-64 md:w-80 md:h-80 object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://placehold.co/400x400?text=Profile&font=montserrat&bg=2f3136&fg=5c5f66";
-                      }}
-                    />
-                  </div>
-                  {/* Removed the number 26 badge */}
-                </div>
-              </div>
-            </motion.div>
-          </section>
+            </div>
+        </section>
 
-          {/* Ventures Section */}
-          <section id="ventures" className="section-container bg-slate-800/50">
-            <motion.div 
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto px-6"
-            >
-              <h2 className="section-title mx-auto mb-16">My Ventures</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                {/* Libemulu Card */}
-                <motion.div 
-                  variants={fadeIn}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-blue-500 hover:glow-border transition-all transform hover:-translate-y-1"
-                >
-                  <div className="flex items-center mb-4">
-                    <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                      <span className="text-2xl">💻</span>
-                    </div>
-                    <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-                      Libemulu
-                    </h3>
-                  </div>
-                  <p className="text-blue-400 font-medium mb-2">Software & Cybersecurity</p>
-                  <p className="text-xl font-medium mb-3 text-white">Organization is the key to growth.</p>
-                  <p className="text-gray-300 mb-4">
-                    Providing autonomous penetration testing and bespoke software development to help enterprises scale securely.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {['Python', 'Linux Security', 'Full-Stack'].map((tag) => (
-                      <span 
-                        key={tag}
-                        className="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Derash Card */}
-                <motion.div 
-                  variants={fadeIn}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-orange-500 hover:glow-orange transition-all transform hover:-translate-y-1"
-                >
-                  <div className="flex items-center mb-4">
-                    <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                      <span className="text-2xl">🤖</span>
-                    </div>
-                    <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
-                      Derash
-                    </h3>
-                  </div>
-                  <p className="text-orange-400 font-medium mb-2">Autonomous Robotics</p>
-                  <p className="text-xl font-medium mb-3 text-white">Closing the technology gap in East Africa.</p>
-                  <p className="text-gray-300 mb-4">
-                    Modernizing Ethiopian agriculture and industry through autonomous fertilizer sprayers, laser weeders, and precision industrial arms.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {['ROS', 'C++', 'Computer Vision'].map((tag) => (
-                      <span 
-                        key={tag}
-                        className="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Skills Section */}
-          <section id="skills" className="section-container bg-gradient-to-b from-slate-800/50 to-slate-900">
-            <motion.div 
-              initial={{ opacity: 0, x: -100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto px-6"
-            >
-              <h2 className="section-title mx-auto mb-16">My Skills</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {/* Software Skills */}
-                <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/70">
-                  <h3 className="text-2xl font-bold text-blue-400 mb-6 flex items-center">
-                    <span className="text-3xl mr-3">👨‍💻</span> Software
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {['Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Go', 'Rust', 'SQL', 'Swift', 'Kotlin', 'Linux'].map((skill) => (
-                      <motion.button 
-                        key={skill}
-                        whileHover={{ scale: 1.05 }}
-                        className="skill-button border border-blue-700/50 text-blue-300 rounded-xl py-3 font-medium text-center bg-slate-900/30 hover:border-blue-500 hover:glow-border hover:bg-gradient-to-r hover:from-blue-900 hover:to-blue-800 hover:text-white"
-                      >
-                        {skill}
-                      </motion.button>
-                    ))}
-                  </div>
+        <section class="min-h-screen flex flex-col justify-center py-20 px-6 bg-gradient-to-b from-slate-800/50 to-slate-900">
+            <div class="container mx-auto slide-in-right">
+                <h2 class="section-title">Future Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div id="future-projects-container" class="contents"></div>
                 </div>
-
-                {/* Robotics Skills */}
-                <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/70">
-                  <h3 className="text-2xl font-bold text-orange-400 mb-6 flex items-center">
-                    <span className="text-3xl mr-3">⚙️</span> Robotics
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {['ROS', 'C++', 'MATLAB', 'Simulink', 'Verilog', 'PLC', 'Arduino'].map((skill) => (
-                      <motion.button 
-                        key={skill}
-                        whileHover={{ scale: 1.05 }}
-                        className="skill-button border border-orange-700/50 text-orange-300 rounded-xl py-3 font-medium text-center bg-slate-900/30 hover:border-orange-500 hover:glow-orange hover:bg-gradient-to-r hover:from-orange-900 hover:to-orange-800 hover:text-white"
-                      >
-                        {skill}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Security Skills */}
-                <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/70">
-                  <h3 className="text-2xl font-bold text-blue-400 mb-6 flex items-center">
-                    <span className="text-3xl mr-3">🔒</span> Security
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    {['Network Defense', 'Autonomous Pentesting', 'Cryptography'].map((skill) => (
-                      <motion.button 
-                        key={skill}
-                        whileHover={{ scale: 1.05 }}
-                        className="skill-button border border-blue-700/50 text-blue-300 rounded-xl py-3 font-medium text-center bg-slate-900/30 hover:border-blue-500 hover:glow-border hover:bg-gradient-to-r hover:from-blue-900 hover:to-blue-800 hover:text-white"
-                      >
-                        {skill}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Contact Section */}
-          <section id="contact" className="section-container bg-gradient-to-b from-slate-900 to-slate-800">
-            <motion.div 
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto px-6 text-center"
-            >
-              <h2 className="section-title mx-auto mb-8">Let's Connect</h2>
-              <p className="text-3xl md:text-4xl font-bold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-orange-500">
-                Ready to build the future?
-              </p>
-              
-              <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto">
-                <motion.a 
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(59, 130, 246, 0.8)" }}
-                  href="mailto:alazaryalew7@gmail.com"
-                  className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center nav-link"
-                >
-                  <span className="mr-3">✉️</span> Email Me
-                </motion.a>
-                <motion.a 
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(59, 130, 246, 0.8)" }}
-                  href="https://linkedin.com" 
-                  className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center nav-link"
-                >
-                  <span className="mr-3">💼</span> LinkedIn
-                </motion.a>
-                <motion.a 
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(59, 130, 246, 0.8)" }}
-                  href="https://github.com" 
-                  className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center nav-link"
-                >
-                  <span className="mr-3">🐙</span> GitHub
-                </motion.a>
-              </div>
-            </motion.div>
-          </section>
-        </div>
-      )}
+            </div>
+        </section>
     </div>
-  );
-}
-```
+
+    <div id="main-view">
+        
+        <header class="fixed top-0 w-full backdrop-blur-lg bg-slate-800/80 border-b border-slate-700 z-50">
+            <nav class="container mx-auto px-6 py-4 flex justify-center">
+                <ul class="flex flex-wrap justify-center gap-6 md:gap-10 list-none">
+                    <li><a href="#profile" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Profile<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                    <li><a href="#ventures" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Ventures<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                    <li>
+                        <button onclick="toggleView(true)" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all bg-transparent border-none cursor-pointer">
+                            Portfolio
+                            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span>
+                        </button>
+                    </li>
+                    <li><a href="#skills" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Skills<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                    <li><a href="#contact" class="text-gray-300 hover:text-blue-400 font-medium text-lg relative group transition-all">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-orange-500 transition-all group-hover:w-full"></span></a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section id="profile" class="section-container pt-32 fade-in-section">
+            <div class="container mx-auto px-6 flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="name-header text-center md:text-left">
+                        <h1>Alazar Yalew</h1>
+                        <p class="text-2xl text-slate-400">Student at ASTU University, Ethiopia</p>
+                    </div>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <div class="mission-statement mb-6">
+                        <p class="text-lg leading-relaxed">
+                            I believe technology only matters when it solves physical problems. Ethiopia has immense potential, but we're often left behind in the global robotics and security race. I'm dedicated to changing that narrative.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-3 flex items-center">
+                            <span className="text-blue-400 mr-2">🚀</span> Founder of Libemulu & Derash
+                        </h2>
+                        <p className="text-gray-300 leading-relaxed">
+                            I founded Libemulu to bring world-class cybersecurity and organization to Ethiopian businesses, and Derash to prove that autonomous machines can solve our most difficult mechanical challenges—from farming to manufacturing.
+                        </p>
+                    </div>
+
+                    <a href="#ventures" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 inline-block transform hover:scale-105">
+                        Explore My Ventures
+                    </a>
+                </div>
+                
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="glow-border rounded-full overflow-hidden border-4 border-blue-500 w-64 h-64 md:w-80 md:h-80">
+                        <img 
+                            src="https://i.postimg.cc/ct3Nq8Bw/IMG-20250917-132856-678.jpg" 
+                            alt="Alazar Yalew" 
+                            class="w-full h-full object-cover"
+                            onerror="this.src='https://placehold.co/400x400?text=Profile&font=montserrat&bg=2f3136&fg=5c5f66'"
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ventures" class="section-container bg-slate-800/50">
+            <div class="container mx-auto px-6 slide-in-right">
+                <h2 class="section-title">My Ventures</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                    
+                    <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-blue-500 hover:glow-border transition-all transform hover:-translate-y-1">
+                        <div class="flex items-center mb-4">
+                            <div class="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-2xl">💻</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Libemulu</h3>
+                        </div>
+                        <p class="text-blue-400 font-medium mb-2">Software & Cybersecurity</p>
+                        <p class="text-xl font-medium mb-3 text-white">Organization is the key to growth.</p>
+                        <p class="text-gray-300 mb-4">Providing autonomous penetration testing and bespoke software development to help enterprises scale securely.</p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Python</span>
+                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Linux Security</span>
+                            <span class="bg-blue-900/70 text-blue-300 px-3 py-1.5 rounded-full text-sm border border-blue-800/70 font-medium">Full-Stack</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 hover:border-orange-500 hover:glow-orange transition-all transform hover:-translate-y-1">
+                        <div class="flex items-center mb-4">
+                            <div class="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-2xl">🤖</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Derash</h3>
+                        </div>
+                        <p class="text-orange-400 font-medium mb-2">Autonomous Robotics</p>
+                        <p class="text-xl font-medium mb-3 text-white">Closing the technology gap in East Africa.</p>
+                        <p class="text-gray-300 mb-4">Modernizing Ethiopian agriculture and industry through autonomous fertilizer sprayers, laser weeders, and precision industrial arms.</p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">ROS</span>
+                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">C++</span>
+                            <span class="bg-orange-900/70 text-orange-300 px-3 py-1.5 rounded-full text-sm border border-orange-800/70 font-medium">Computer Vision</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section-container bg-gradient-to-b from-slate-800/50 to-slate-900">
+            <div class="container mx-auto px-6 fade-in-section">
+                <h2 class="section-title">My Skills</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto" id="skills-container">
+                    </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-container bg-gradient-to-b from-slate-900 to-slate-800">
+            <div class="container mx-auto px-6 text-center fade-in-section">
+                <h2 class="section-title">Let's Connect</h2>
+                <p class="text-3xl md:text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-500">Ready to build the future?</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto">
+                    <a href="mailto:alazaryalew7@gmail.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                        <span class="mr-3">✉️</span> Email Me
+                    </a>
+                    <a href="https://linkedin.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                        <span class="mr-3">💼</span> LinkedIn
+                    </a>
+                    <a href="https://github.com" class="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all border border-blue-700/50 flex items-center justify-center hover:scale-105">
+                        <span class="mr-3">🐙</span> GitHub
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION DATA ---
+        const futureProjects = [
+            { icon: '🌐', color: 'blue', type: 'Planned' },
+            { icon: '🤖', color: 'orange', type: 'Planned' },
+            { icon: '🔒', color: 'purple', type: 'Planned' }
+        ];
+
+        const finishedImages = [
+            "https://placekitten.com/600/400?image=4",
+            "https://placekitten.com/600/400?image=5"
+        ];
+
+        const futureImages = [
+            "https://placekitten.com/600/400?image=1",
+            "https://placekitten.com/600/400?image=2",
+            "https://placekitten.com/600/400?image=3"
+        ];
+
+        // --- 2. RENDER FUNCTIONS ---
+        
+        // Render Finished Projects
+        const finishedContainer = document.getElementById('finished-projects-container');
+        finishedImages.forEach((imgSrc, index) => {
+            finishedContainer.innerHTML += `
+                <div class="project-card bg-slate-800 rounded-2xl p-6 border border-slate-700 relative overflow-hidden hover:scale-105 transition-transform fade-in-section">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="text-xl">✅</span>
+                        </div>
+                        <h3 class="text-xl font-bold">Finished Project ${index + 1}</h3>
+                    </div>
+                    <div class="mb-4 rounded-xl overflow-hidden border border-slate-700/50">
+                        <img src="${imgSrc}" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400?text=Finished+Project&font=montserrat&bg=2f3136&fg=5c5f66'">
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3 min-h-[60px]">This project has been successfully completed and deployed.</p>
+                    <span class="bg-green-900/50 text-green-300 px-2.5 py-1 rounded-full text-xs font-medium border border-green-800/70">Completed</span>
+                </div>
+            `;
+        });
+
+        // Render Future Projects
+        const futureContainer = document.getElementById('future-projects-container');
+        futureProjects.forEach((proj, index) => {
+            const colorClass = proj.color === 'blue' ? 'text-blue-400 bg-blue-500/20' : 
+                               proj.color === 'orange' ? 'text-orange-400 bg-orange-500/20' : 'text-purple-400 bg-purple-500/20';
+            const badgeClass = proj.color === 'blue' ? 'bg-blue-900/50 text-blue-300 border-blue-800/70' : 
+                               proj.color === 'orange' ? 'bg-orange-900/50 text-orange-300 border-orange-800/70' : 'bg-purple-900/50 text-purple-300 border-purple-800/70';
+
+            futureContainer.innerHTML += `
+                <div class="project-card bg-slate-800 rounded-2xl p-6 border border-slate-700 relative overflow-hidden hover:scale-105 transition-transform fade-in-section">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 ${colorClass}">
+                            <span class="text-xl">${proj.icon}</span>
+                        </div>
+                        <h3 class="text-xl font-bold">Future Project ${index + 1}</h3>
+                    </div>
+                    <div class="mb-4 rounded-xl overflow-hidden border border-slate-700/50">
+                        <img src="${futureImages[index]}" class="w-full h-40 object-cover" onerror="this.src='https://placehold.co/600x400?text=Future+Project&font=montserrat&bg=2f3136&fg=5c5f66'">
+                    </div>
+                    <p class="text-gray-400 text-sm mb-3 min-h-[60px]">Exciting project in the pipeline. Stay tuned for updates and announcements.</p>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium border ${badgeClass}">${proj.type}</span>
+                </div>
+            `;
+        });
+
+        // Render Skills
+        const skillsData = {
+            'Software': { icon: '👨‍💻', color: 'blue', items: ['Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Go', 'Rust', 'SQL', 'Swift', 'Kotlin', 'Linux'] },
+            'Robotics': { icon: '⚙️', color: 'orange', items: ['ROS', 'C++', 'MATLAB', 'Simulink', 'Verilog', 'PLC', 'Arduino'] },
+            'Security': { icon: '🔒', color: 'blue', items: ['Network Defense', 'Autonomous Pentesting', 'Cryptography'] }
+        };
+
+        const skillsContainer = document.getElementById('skills-container');
+        for (const [category, data] of Object.entries(skillsData)) {
+            const colorText = data.color === 'blue' ? 'text-blue-400' : 'text-orange-400';
+            const hoverClass = data.color === 'blue' ? 'hover:border-blue-500 hover:glow-border hover:from-blue-900 hover:to-blue-800' : 'hover:border-orange-500 hover:glow-orange hover:from-orange-900 hover:to-orange-800';
+            
+            let buttonsHtml = '';
+            data.items.forEach(item => {
+                buttonsHtml += `
+                    <button class="skill-button border border-${data.color}-700/50 text-${data.color}-300 rounded-xl py-3 font-medium text-center bg-slate-900/30 ${hoverClass} hover:text-white hover:bg-gradient-to-r">
+                        ${item}
+                    </button>
+                `;
+            });
+
+            skillsContainer.innerHTML += `
+                <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/70">
+                    <h3 class="text-2xl font-bold ${colorText} mb-6 flex items-center">
+                        <span class="text-3xl mr-3">${data.icon}</span> ${category}
+                    </h3>
+                    <div class="grid grid-cols-${category === 'Security' ? '1' : '2'} gap-4">
+                        ${buttonsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 3. VIEW TOGGLE LOGIC ---
+        function toggleView(showPortfolio) {
+            const mainView = document.getElementById('main-view');
+            const portfolioView = document.getElementById('portfolio-view');
+            const body = document.body;
+
+            if (showPortfolio) {
+                portfolioView.classList.remove('hidden-view');
+                mainView.style.display = 'none';
+                body.style.overflowY = 'hidden'; // Stop background scrolling
+            } else {
+                portfolioView.classList.add('hidden-view');
+                mainView.style.display = 'block';
+                body.style.overflowY = 'auto';
+            }
+        }
+
+        // --- 4. ANIMATION OBSERVER (Replacement for Framer Motion whileInView) ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    // Optional: Stop observing once visible to mimic viewport={{ once: true }}
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Attach observer to all elements with animation classes
+        document.querySelectorAll('.fade-in-section, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+
+    </script>
+</body>
+              </html>
